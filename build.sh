@@ -1,4 +1,4 @@
-git clone https://github.com/bitterypaul/samsung_i9082_local_manifests.git -b cm-13.0 local_manifest_i9082
+git clone https://github.com/bitterypaul/samsung_i9082_local_manifests.git -b cm-13.0-webiewfix local_manifest_i9082
 mv local_manifest_i9082/local_manifest.xml .repo/local_manifest.xml
 rm -r local_manifest_i9082
 repo sync
