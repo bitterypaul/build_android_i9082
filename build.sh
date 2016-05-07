@@ -1,3 +1,5 @@
+//Thanks to @osas514
+
 git clone https://github.com/bitterypaul/samsung_i9082_local_manifests.git -b cm-13.0-webviewfix local_manifest_i9082
 mv local_manifest_i9082/local_manifest.xml .repo/local_manifest.xml
 rm -r local_manifest_i9082
