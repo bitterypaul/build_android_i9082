@@ -1,7 +1,12 @@
 sudo apt-get update
 sudo apt-get install openjdk-7-jdk
 sudo apt-get install git-core gnupg flex bison gperf build-essential zip curl zlib1g-dev gcc-multilib g++-multilib libc6-dev-i386 lib32ncurses5-dev x11proto-core-dev libx11-dev lib32z-dev ccache libgl1-mesa-dev libxml2-utils xsltproc unzip maven schedtool
+#to speed up builds
 sudo apt-get install ccache
+#to record compilation progress for debugging and to share error messages
+sudo apt-get install asciinema
+
+
 sudo wget https://storage.googleapis.com/git-repo-downloads/repo -O /usr/local/bin/repo
 chmod 777 /usr/local/bin/repo
 mkdir ~/cm13
@@ -21,6 +26,8 @@ cd ..
 
 mkdir /home/vignesh/ccache
 export USE_CCACHE=1
+
+asciinema
 
 echo "add_lunch_combo cm_i9082-userdebug" > device/samsung/i9082/vendorsetup.sh
 . build/envsetup.sh
