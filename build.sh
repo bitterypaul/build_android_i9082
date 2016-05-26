@@ -1,5 +1,4 @@
-# Initializing variables
-
+ 
 MODULES=frost/codekidX/lib/modules
 USER=codekidX
 DEVICE=I9082
@@ -12,19 +11,24 @@ Kernel="arch/arm/boot/zImage"
 chmod +x clean.sh
 ./clean.sh  
 
+
+if [ ! -d "toolchain-backup" ]; then
 mkdir toolchain-backup
+cd toolchain-backup
+git clone https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/arm/arm-eabi-4.8.git -b android-6.0.1_r43
+cd ..
+fi
+
 mkdir toolchain 
 cp -r toolchain-backup/* toolchain
- 
-git clone https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/arm/arm-eabi-4.8.git -b android-6.0.1_r43 toolchain
-
+  
 export ARCH=arm 
 export CROSS_COMPILE=$(pwd)/toolchain/arm-eabi-4.8/bin/arm-eabi-
  
 make frost_lollipop_defconfig
  
 make CONFIG_DEBUG_SECTION_MISMATCH=y -j2
-
+ 
 if [ -f $Kernel ]
 	then
 mkdir frost/codekidX
@@ -36,19 +40,10 @@ mkdir modules
 cd ../../..
 find -name '*.ko' -exec cp {} $MODULES \;
 cp prebuilt_modules/VoiceSolution.ko $MODULES
-cp prebuilt_modules/KernelAdiutor.apk frost/codekidX/app
-echo -e "Copying kernel"
-echo "==============================================="
-cp $Kernel frost/kernel
-echo -e ""
-echo -e ""
-echo -e "Zipping"
-echo "==============================================="
+cp prebuilt_modules/KernelAdiutor.apk frost/codekidX/app 
+cp $Kernel frost/kernel 
 cd frost
-zip -r frost-$DATE-$DEVICE-$CODENAME.zip .
-echo -e ""
-echo -e "Removing unwanted stuffs .."
-echo "==============================================="
+zip -r frost-$DATE-$DEVICE-$CODENAME.zip  
 rm -rf kernel/zImage
 rm -rf codekidX
 cd ..
