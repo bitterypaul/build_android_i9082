@@ -1,38 +1,59 @@
-sudo apt-get update
-sudo apt-get install openjdk-7-jdk
-sudo apt-get install git-core gnupg flex bison gperf build-essential zip curl zlib1g-dev gcc-multilib g++-multilib libc6-dev-i386 lib32ncurses5-dev x11proto-core-dev libx11-dev lib32z-dev ccache libgl1-mesa-dev libxml2-utils xsltproc unzip maven schedtool
-#to speed up builds
-sudo apt-get install ccache
-#to record compilation progress for debugging and to share error messages
-sudo apt-get install asciinema
+# Initializing variables
 
+MODULES=frost/codekidX/lib/modules
+USER=codekidX
+DEVICE=I9082
+VERSION=-marshmallow-2.5
+CODENAME=-marshion-2.5
+DATE=$(date '+%Y%m%d')
+Kernel="arch/arm/boot/zImage"
 
-sudo wget https://storage.googleapis.com/git-repo-downloads/repo -O /usr/local/bin/repo
-chmod 777 /usr/local/bin/repo
-mkdir ~/cm13
-cd ~/cm13
-repo init -u https://github.com/CyanogenMod/android.git -b cm-13.0
+ 
+chmod +x clean.sh
+./clean.sh  
 
-repo sync -j12
-git clone https://github.com/bitterypaul/samsung_i9082_local_manifests.git -b cm-13.0 .repo/local_manifests 
+mkdir toolchain-backup
+mkdir toolchain 
+cp -r toolchain-backup/* toolchain
+ 
+git clone https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/arm/arm-eabi-4.8.git -b android-6.0.1_r43 toolchain
 
-rm .repo/local_manifests/LICENSE.md
-rm .repo/local_manifests/README.md
-repo sync --force-sync -j32
+export ARCH=arm 
+export CROSS_COMPILE=$(pwd)/toolchain/arm-eabi-4.8/bin/arm-eabi-
+ 
+make frost_lollipop_defconfig
+ 
+make CONFIG_DEBUG_SECTION_MISMATCH=y -j2
 
-cd build_tools
-./patch
+if [ -f $Kernel ]
+	then
+mkdir frost/codekidX
+cd frost/codekidX
+mkdir lib
+mkdir app
+cd lib
+mkdir modules
+cd ../../..
+find -name '*.ko' -exec cp {} $MODULES \;
+cp prebuilt_modules/VoiceSolution.ko $MODULES
+cp prebuilt_modules/KernelAdiutor.apk frost/codekidX/app
+echo -e "Copying kernel"
+echo "==============================================="
+cp $Kernel frost/kernel
+echo -e ""
+echo -e ""
+echo -e "Zipping"
+echo "==============================================="
+cd frost
+zip -r frost-$DATE-$DEVICE-$CODENAME.zip .
+echo -e ""
+echo -e "Removing unwanted stuffs .."
+echo "==============================================="
+rm -rf kernel/zImage
+rm -rf codekidX
 cd ..
-
-mkdir /home/vignesh/ccache
-export USE_CCACHE=1
-
-asciinema
-
-echo "add_lunch_combo cm_i9082-userdebug" > device/samsung/i9082/vendorsetup.sh
-. build/envsetup.sh
-brunch i9082
-
-
-
-watch -n1 -d ccache -s
+rm -rf toolchain
+make clean mrproper
+git checkout drivers/misc/vc04_services/interface/vchiq_arm/vchiq_version.c
+clear 
+fi
